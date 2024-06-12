@@ -44,7 +44,7 @@ class BotManager {
     }
   }
 
-  async assignDirectMessage() {
+  async assignDirectMessages() {
     const accounts = []; // TODO: GET accounts from DB
     if (!accounts.length) {
       return;
