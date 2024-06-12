@@ -57,6 +57,22 @@ class DBManager extends JSONdb {
 
     return result;
   }
+
+  get credentials() {
+    return this.get("credentials");
+  }
+
+  get bots() {
+    return this.get("bots");
+  }
+
+  get maxRunningBots() {
+    return this.get("bots")["config"]["maxRunningBots"] ?? 10;
+  }
+
+  get profiles() {
+    return this.get("bots")["profiles"];
+  }
 }
 
 module.exports = DBManager;
