@@ -8,7 +8,6 @@ const {
   ERROR,
   CLOSING,
 } = require("../constants");
-const { delay, getRandomNumber } = require("../utils");
 
 class Action {
   constructor({
@@ -27,7 +26,7 @@ class Action {
 }
 
 class Bot {
-  constructor({ username, password, ads_power_profile_id, extra }) {
+  constructor({ username, password, ads_power_profile_id }) {
     if (!ads_power_profile_id) {
       throw new Error(`"ads_power_profile_id" is required!`);
     }
@@ -36,7 +35,6 @@ class Bot {
     this.username = username;
     this.password = password;
     this.ads_power_profile_id = ads_power_profile_id;
-    this.extra = Boolean(extra);
 
     // Worker data
     this.status = IDLE;
