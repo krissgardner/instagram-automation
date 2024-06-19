@@ -10,7 +10,7 @@ import {
 } from "../globalConstants";
 import Action, { ActionParams } from "./Action";
 
-interface BotParams {
+export interface BotParams {
   username: string;
   password: string;
   ads_power_profile_id: string;
@@ -45,8 +45,7 @@ class Bot {
   }
 
   addAction(key: string, options: Omit<ActionParams, "key">) {
-    // @ts-ignore
-    if (this[key] === undefined) {
+    if (!this.hasOwnProperty(key)) {
       throw new Error(`${key} does not exist!`);
     }
 
@@ -141,6 +140,8 @@ class Bot {
           `${this.username}: (${action.retries}) ${action.key} started!`,
         );
 
+        // try block should catch invalid key names
+        // TODO: Implement function binding / method naming convention (ACTION_[key]) in order to prevent mistakes
         // @ts-ignore
         await this[action.key](...action.params);
 
