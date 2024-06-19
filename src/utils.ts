@@ -1,4 +1,4 @@
-function shuffle(array) {
+export function shuffle(array: unknown[]) {
   const result = [...array];
   let index = result.length;
   let randIndex;
@@ -14,7 +14,10 @@ function shuffle(array) {
   return result;
 }
 
-async function waitUntil(condition) {
+export async function waitUntil(
+  condition: () => boolean,
+  timeout: number,
+): Promise<void> {
   return await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (condition()) {
@@ -25,20 +28,20 @@ async function waitUntil(condition) {
   });
 }
 
-function delay(time) {
+export function delay(time: number) {
   return new Promise(function (resolve) {
     setTimeout(resolve, time);
   });
 }
 
-function getRandomNumber(min, max) {
+export function getRandomNumber(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const setupProcess = () => {
+export const setupProcess = () => {
   process.stdin.resume();
 
-  function exitHandler(options, exitCode) {
+  function exitHandler(options: { exit?: boolean }, exitCode = 0) {
     if (exitCode || exitCode === 0) {
       console.log(`Exited with code ${exitCode}`);
     }
@@ -56,5 +59,3 @@ const setupProcess = () => {
   process.on("SIGUSR1", exitHandler.bind(null, { exit: true }));
   process.on("SIGUSR2", exitHandler.bind(null, { exit: true }));
 };
-
-module.exports = { shuffle, waitUntil, delay, setupProcess, getRandomNumber };
