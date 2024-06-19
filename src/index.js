@@ -1,4 +1,4 @@
-const { BotManager, Bot } = require("./instagram");
+const { BotManager, Bot } = require("./bots");
 const { waitUntil, setupProcess } = require("./utils");
 
 setupProcess();
