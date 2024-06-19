@@ -1,4 +1,4 @@
-export function shuffle(array: unknown[]) {
+export function shuffle<T extends any[]>(array: T) {
   const result = [...array];
   let index = result.length;
   let randIndex;
@@ -16,7 +16,7 @@ export function shuffle(array: unknown[]) {
 
 export async function waitUntil(
   condition: () => boolean,
-  timeout: number,
+  timeout = 1000,
 ): Promise<void> {
   return await new Promise((resolve) => {
     const interval = setInterval(() => {
@@ -24,7 +24,7 @@ export async function waitUntil(
         resolve();
         clearInterval(interval);
       }
-    }, 1000);
+    }, timeout);
   });
 }
 
