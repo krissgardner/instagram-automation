@@ -1,5 +1,5 @@
-const { BotManager, Bot } = require("./bots");
-const { waitUntil, setupProcess } = require("./utils");
+import { BotManager } from "./bots";
+import { waitUntil, setupProcess } from "./utils";
 
 setupProcess();
 
