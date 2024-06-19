@@ -10,3 +10,38 @@ export interface BrowserConnection {
     puppeteer: string;
   };
 }
+
+export interface Profile {
+  username: string;
+  password: string;
+  ads_power_profile_id: string;
+}
+
+export interface Config {
+  maxRunningBots: number;
+  minDM: number;
+  maxDM: number;
+}
+
+export interface QueueItem {
+  instagram_url: string;
+  message: string;
+}
+
+export interface CredentialsStorage {
+  adsPowerEndpoint: string;
+  adsPowerLocalEndpoint: string;
+  adsPowerApiKey: string;
+}
+
+export interface BotsStorage {
+  config: Config;
+  profiles: Profile[];
+}
+
+export interface Storage {
+  credentials: CredentialsStorage;
+  bots: BotsStorage;
+  queue: QueueItem[];
+  meta: Record<string, unknown>;
+}
