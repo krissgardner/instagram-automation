@@ -1,9 +1,11 @@
-const dbManager = require("../db");
-const Bot = require("./Bot");
-const { IDLE, ERROR } = require("../constants");
-const { shuffle, waitUntil, getRandomNumber } = require("../utils");
+import dbManager from "../db";
+import Bot from "./Bot";
+import { IDLE, ERROR } from "../globalConstants";
+import { shuffle, waitUntil, getRandomNumber } from "../utils";
 
 class BotManager {
+  bots: { [key: string]: Bot };
+
   constructor() {
     this.bots = {};
   }
@@ -23,29 +25,29 @@ class BotManager {
     );
   }
 
-  getRunningBots() {
+  getRunningBots(): Bot[] {
     return Object.values(this.bots).filter((bot) => {
       return ![IDLE, ERROR].includes(bot.status);
     });
   }
 
-  getIdleBots() {
+  getIdleBots(): Bot[] {
     return Object.values(this.bots).filter((bot) => {
       return bot.status === IDLE;
     });
   }
 
   *getBotGenerator() {
-    const bots = shuffle(
+    const bots = shuffle<Bot[]>(
       Object.values(this.bots).filter((b) => b.status !== ERROR),
     );
-    for (let i in bots) {
-      yield bots[i];
+    for (const bot of bots) {
+      yield bot;
     }
   }
 
   async assignDirectMessages() {
-    const accounts = []; // TODO: GET accounts from DB
+    const accounts: any[] = []; // TODO: GET accounts from DB
     if (!accounts.length) {
       return;
     }
@@ -84,4 +86,4 @@ class BotManager {
   }
 }
 
-module.exports = BotManager;
+export default BotManager;
