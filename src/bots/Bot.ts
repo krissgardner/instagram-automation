@@ -1,42 +1,41 @@
-const { adsPowerManager } = require("../adsPower");
-const dbManager = require("../db");
-const {
+import adsPowerManager from "../adsPower";
+import dbManager from "../db";
+import {
   IDLE,
   STARTING,
   WAITING,
   WORKING,
   ERROR,
   CLOSING,
-} = require("../constants");
+} from "../globalConstants";
+import Action, { ActionParams } from "./Action";
 
-class Action {
-  constructor({
-    key,
-    params = [],
-    retries = 0,
-    priority = 0,
-    ignoreErrors = false,
-  }) {
-    this.key = key;
-    this.params = params;
-    this.retries = retries;
-    this.priority = priority;
-    this.ignoreErrors = ignoreErrors;
-  }
+interface BotParams {
+  username: string;
+  password: string;
+  ads_power_profile_id: string;
 }
 
 class Bot {
-  constructor({ username, password, ads_power_profile_id }) {
+  username: string;
+  password: string;
+  ads_power_profile_id: string;
+  status: number;
+  browser: any;
+  page: any;
+  actions: Action[];
+  interval: NodeJS.Timeout | undefined;
+  autoClose: NodeJS.Timeout | undefined;
+
+  constructor({ username, password, ads_power_profile_id }: BotParams) {
     if (!ads_power_profile_id) {
       throw new Error(`"ads_power_profile_id" is required!`);
     }
 
-    // DB data
     this.username = username;
     this.password = password;
     this.ads_power_profile_id = ads_power_profile_id;
 
-    // Worker data
     this.status = IDLE;
     this.browser = undefined;
     this.page = undefined;
@@ -45,7 +44,8 @@ class Bot {
     this.autoClose = undefined;
   }
 
-  addAction(key, options) {
+  addAction(key: string, options: Omit<ActionParams, "key">) {
+    // @ts-ignore
     if (this[key] === undefined) {
       throw new Error(`${key} does not exist!`);
     }
@@ -80,7 +80,6 @@ class Bot {
     this.interval = setInterval(async () => {
       switch (this.status) {
         case IDLE: {
-          // Start bot when it has actions
           if (this.actions.length !== 0) {
             this.status = STARTING;
 
@@ -98,15 +97,10 @@ class Bot {
 
           return;
         }
-        case STARTING: {
+        case STARTING:
+        case WORKING:
+        case CLOSING:
           return;
-        }
-        case WORKING: {
-          return;
-        }
-        case CLOSING: {
-          return;
-        }
         case ERROR: {
           clearInterval(this.interval);
           this.interval = undefined;
@@ -115,7 +109,6 @@ class Bot {
         }
       }
 
-      // WAITING
       if (this.actions.length === 0) {
         if (this.autoClose === undefined) {
           this.autoClose = setTimeout(async () => {
@@ -148,7 +141,7 @@ class Bot {
           `${this.username}: (${action.retries}) ${action.key} started!`,
         );
 
-        // Call action
+        // @ts-ignore
         await this[action.key](...action.params);
 
         console.log(
@@ -180,14 +173,10 @@ class Bot {
   async init() {
     console.log(`INIT ${this.username}`);
 
-    // Open browser
     const browser = await this.initBrowser();
     if (!browser) {
       return false;
     }
-
-    // Run bot checks
-    // this.addAction("checkIfLoggedIn", { retries: 3, priority: -50 });
 
     return true;
   }
@@ -196,18 +185,14 @@ class Bot {
     return dbManager.getBotMeta(this.username);
   }
 
-  patchMeta(payload) {
+  patchMeta(payload: any) {
     return dbManager.patchBotMeta(this.username, payload);
   }
-
-  // ACTION DEFINITIONS
 
   async checkIfLoggedIn() {
     if (this.page === undefined) {
       this.page = await this.browser.newPage();
     }
-
-    // TBD
 
     this.addAction("logIn", { retries: 3, priority: -100 });
   }
@@ -217,13 +202,10 @@ class Bot {
       this.page = await this.browser.newPage();
     }
 
-    // TBD
-
-    // Wait for redirect or fail
     await this.page.waitForNavigation({ timeout: 10000 });
   }
 
-  async sendMessage(profileUrl, message) {
+  async sendMessage(profileUrl: string, message: string) {
     if (this.page === undefined) {
       this.page = await this.browser.newPage();
     }
@@ -238,4 +220,4 @@ class Bot {
   }
 }
 
-module.exports = Bot;
+export default Bot;
