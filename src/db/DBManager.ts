@@ -68,11 +68,11 @@ class DBManager extends JSONdb {
   }
 
   get maxRunningBots() {
-    return this.get("bots")["config"]["maxRunningBots"] ?? 10;
+    return this.bots.config.maxRunningBots ?? 10;
   }
 
   get profiles() {
-    return this.get("bots")["profiles"];
+    return this.bots.profiles;
   }
 }
 
