@@ -1,10 +1,10 @@
-const { join } = require("node:path");
-const JSONdb = require("simple-json-db");
+import JSONdb from "simple-json-db";
+import { BotsStorage, CredentialsStorage } from "../types";
 
 class DBManager extends JSONdb {
   checkIntegrity() {
     // Check bots
-    const bots = this.get("bots");
+    const bots: BotsStorage = this.get("bots");
     if (!bots) {
       throw new Error(`Bots not set!`);
     }
@@ -17,10 +17,12 @@ class DBManager extends JSONdb {
       throw new Error(`Profiles not array!`);
     }
 
-    profiles.forEach((bot) => {
-      const count = bots.filter((b) => b.username === bot.username).length;
+    profiles.forEach((profile) => {
+      const count = profiles.filter(
+        (p) => p.username === profile.username,
+      ).length;
       if (count !== 1) {
-        throw new Error(`Username duplicate found: ${bot.username}`);
+        throw new Error(`Username duplicate found: ${profile.username}`);
       }
     });
 
@@ -31,18 +33,17 @@ class DBManager extends JSONdb {
     }
   }
 
-  metaKey(username) {
+  metaKey(username: string) {
     return `meta-${username}`;
   }
 
-  getBotMeta(username) {
+  getBotMeta(username: string) {
     const key = this.metaKey(username);
     const meta = this.get("meta") || {}; // Empty Meta
-    const botMeta = meta[key] || {}; // Default data
-    return botMeta;
+    return meta[key] || {};
   }
 
-  patchBotMeta(username, payload) {
+  patchBotMeta(username: string, payload: any) {
     const key = this.metaKey(username);
     const botMeta = this.getBotMeta(username);
 
@@ -59,11 +60,11 @@ class DBManager extends JSONdb {
   }
 
   get credentials() {
-    return this.get("credentials");
+    return this.get("credentials") as CredentialsStorage;
   }
 
   get bots() {
-    return this.get("bots");
+    return this.get("bots") as BotsStorage;
   }
 
   get maxRunningBots() {
@@ -75,4 +76,4 @@ class DBManager extends JSONdb {
   }
 }
 
-module.exports = DBManager;
+export default DBManager;
