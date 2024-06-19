@@ -1,5 +1,5 @@
 const dbManager = require("../db");
-const RedditBot = require("./Bot");
+const Bot = require("./Bot");
 const { IDLE, ERROR } = require("../constants");
 const { shuffle, waitUntil, getRandomNumber } = require("../utils");
 
@@ -16,7 +16,7 @@ class BotManager {
     // Init bots async
     await Promise.allSettled(
       profileList.map(async (data) => {
-        const bot = new RedditBot(data);
+        const bot = new Bot(data);
         this.bots[bot.username] = bot;
         return bot.startTaskWatcher();
       }),
